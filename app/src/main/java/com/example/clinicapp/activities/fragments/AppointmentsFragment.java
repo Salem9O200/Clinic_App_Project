@@ -1,64 +1,30 @@
 package com.example.clinicapp.activities.fragments;
 
 import android.os.Bundle;
-
 import androidx.fragment.app.Fragment;
-
+import androidx.recyclerview.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import androidx.appcompat.app.AlertDialog;
 
 import com.example.clinicapp.R;
+import com.example.clinicapp.activities.adapters.AppointmentAdapter;
+import com.example.clinicapp.activities.database.AppDatabase;
+import com.example.clinicapp.activities.models.Appointment;
+import com.example.clinicapp.activities.utils.SharedPrefManager;
 import com.example.clinicapp.databinding.FragmentAppointmentsBinding;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link AppointmentsFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.util.List;
+
 public class AppointmentsFragment extends Fragment {
 
     FragmentAppointmentsBinding binding;
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public AppointmentsFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment AppointmentsFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static AppointmentsFragment newInstance(String param1, String param2) {
-        AppointmentsFragment fragment = new AppointmentsFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
+    private List<Appointment> appointments;
+    private AppointmentAdapter adapter;
+    private AppDatabase db;
+    private int userId;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -66,7 +32,46 @@ public class AppointmentsFragment extends Fragment {
 
         binding = FragmentAppointmentsBinding.inflate(inflater, container, false);
 
-        // Inflate the layout for this fragment
+        db = AppDatabase.getInstance(getActivity());
+        SharedPrefManager pref = new SharedPrefManager(getActivity());
+        userId = pref.getUserId();
+
+        appointments = db.appointmentDao().getAppointmentsByUserId(userId);
+
+        adapter = new AppointmentAdapter(appointments);
+        binding.appointmentRV.setLayoutManager(new LinearLayoutManager(getActivity()));
+        binding.appointmentRV.setAdapter(adapter);
+
+        // FAB لإضافة موعد جديد
+        binding.fabAddAppointment.setOnClickListener(v -> showAddAppointmentDialog());
+
         return binding.getRoot();
+    }
+
+    private void showAddAppointmentDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("New Appointment");
+
+        View dialogView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_add_appointment, null);
+        EditText etDoctor = dialogView.findViewById(R.id.etDoctor);
+        EditText etDate = dialogView.findViewById(R.id.etDate);
+
+        builder.setView(dialogView);
+        builder.setPositiveButton("Save", (dialog, which) -> {
+            String doctor = etDoctor.getText().toString().trim();
+            String date = etDate.getText().toString().trim();
+
+            if (!doctor.isEmpty() && !date.isEmpty()) {
+                Appointment newApp = new Appointment(doctor, date, userId);
+                db.appointmentDao().insert(newApp);
+
+                // تحديث RecyclerView
+                appointments.clear();
+                appointments.addAll(db.appointmentDao().getAppointmentsByUserId(userId));
+                adapter.notifyDataSetChanged();
+            }
+        });
+        builder.setNegativeButton("Cancel", null);
+        builder.show();
     }
 }

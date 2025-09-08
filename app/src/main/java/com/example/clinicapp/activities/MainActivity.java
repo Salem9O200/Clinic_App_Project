@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.clinicapp.R;
 import com.example.clinicapp.activities.fragments.AppointmentsFragment;
+import com.example.clinicapp.activities.fragments.HomeFragment;
 import com.example.clinicapp.activities.fragments.ProfileFragment;
 import com.example.clinicapp.activities.fragments.RecordsFragment;
 import com.example.clinicapp.activities.utils.SharedPrefManager;
@@ -32,14 +33,14 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        replaceFragment(new AppointmentsFragment());
+        replaceFragment(new HomeFragment());
 
         binding.bottomNavigation.setOnItemSelectedListener(item -> {
             Fragment selected = null;
             int id = item.getItemId();
 
             if (id == R.id.nav_home) {
-                selected = new AppointmentsFragment(); // أو أي Fragment يمثل الصفحة الرئيسية
+                selected = new AppointmentsFragment();
             } else if (id == R.id.nav_appointments) {
                 selected = new AppointmentsFragment();
             } else if (id == R.id.nav_records) {
