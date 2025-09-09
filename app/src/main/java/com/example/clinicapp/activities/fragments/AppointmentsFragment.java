@@ -20,39 +20,36 @@ import java.util.List;
 
 public class AppointmentsFragment extends Fragment {
 
-    FragmentAppointmentsBinding binding;
-    private List<Appointment> appointments;
+    private FragmentAppointmentsBinding binding;
     private AppointmentAdapter adapter;
-    private AppDatabase db;
-    private int userId;
+    private List<Appointment> appointments;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         binding = FragmentAppointmentsBinding.inflate(inflater, container, false);
 
-        db = AppDatabase.getInstance(getActivity());
         SharedPrefManager pref = new SharedPrefManager(getActivity());
-        userId = pref.getUserId();
+        int userId = pref.getUserId();
 
+        AppDatabase db = AppDatabase.getInstance(getActivity());
         appointments = db.appointmentDao().getAppointmentsByUserId(userId);
 
         adapter = new AppointmentAdapter(appointments);
         binding.appointmentRV.setLayoutManager(new LinearLayoutManager(getActivity()));
         binding.appointmentRV.setAdapter(adapter);
 
-        // FAB لإضافة موعد جديد
-        binding.fabAddAppointment.setOnClickListener(v -> showAddAppointmentDialog());
+        binding.fabAddAppointment.setOnClickListener(v -> showAddAppointmentDialog(userId));
 
         return binding.getRoot();
     }
 
-    private void showAddAppointmentDialog() {
+    private void showAddAppointmentDialog(int userId) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("New Appointment");
 
-        View dialogView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_add_appointment, null);
+        View dialogView = LayoutInflater.from(getActivity())
+                .inflate(R.layout.dialog_add_appointment, null);
         EditText etDoctor = dialogView.findViewById(R.id.etDoctor);
         EditText etDate = dialogView.findViewById(R.id.etDate);
 
@@ -63,11 +60,12 @@ public class AppointmentsFragment extends Fragment {
 
             if (!doctor.isEmpty() && !date.isEmpty()) {
                 Appointment newApp = new Appointment(doctor, date, userId);
-                db.appointmentDao().insert(newApp);
+                AppDatabase.getInstance(getActivity()).appointmentDao().insert(newApp);
 
-                // تحديث RecyclerView
+                // تحديث القائمة
                 appointments.clear();
-                appointments.addAll(db.appointmentDao().getAppointmentsByUserId(userId));
+                appointments.addAll(AppDatabase.getInstance(getActivity())
+                        .appointmentDao().getAppointmentsByUserId(userId));
                 adapter.notifyDataSetChanged();
             }
         });

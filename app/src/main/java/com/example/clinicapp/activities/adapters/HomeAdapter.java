@@ -13,24 +13,24 @@ import com.example.clinicapp.activities.models.Appointment;
 
 import java.util.List;
 
-public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.AppointmentViewHolder> {
+public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder> {
 
     private List<Appointment> appointments;
 
-    public AppointmentAdapter(List<Appointment> appointments) {
+    public HomeAdapter(List<Appointment> appointments) {
         this.appointments = appointments;
     }
 
     @NonNull
     @Override
-    public AppointmentViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public HomeViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_appointment, parent, false);
-        return new AppointmentViewHolder(view);
+                .inflate(R.layout.item_home_appointment, parent, false);
+        return new HomeViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull AppointmentViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull HomeViewHolder holder, int position) {
         Appointment appt = appointments.get(position);
         holder.tvDoctor.setText(appt.getDoctor());
         holder.tvDate.setText(appt.getDate());
@@ -41,13 +41,10 @@ public class AppointmentAdapter extends RecyclerView.Adapter<AppointmentAdapter.
         return appointments.size();
     }
 
-    public void setAppointments(List<Appointment> appointments) {
-    }
-
-    public static class AppointmentViewHolder extends RecyclerView.ViewHolder {
+    public static class HomeViewHolder extends RecyclerView.ViewHolder {
         TextView tvDoctor, tvDate;
 
-        public AppointmentViewHolder(@NonNull View itemView) {
+        public HomeViewHolder(@NonNull View itemView) {
             super(itemView);
             tvDoctor = itemView.findViewById(R.id.tvDoctor);
             tvDate = itemView.findViewById(R.id.tvDate);

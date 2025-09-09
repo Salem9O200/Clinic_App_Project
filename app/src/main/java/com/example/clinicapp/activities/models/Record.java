@@ -9,23 +9,27 @@ public class Record {
     @PrimaryKey(autoGenerate = true)
     private int id;
 
-    private String title;
+    private String diagnosis;
     private String description;
     private int userId;
 
-    public Record(String title, String description, int userId) {
-        this.title = title;
+    public Record(String diagnosis, String description, int userId) {
+        this.diagnosis = diagnosis;
         this.description = description;
         this.userId = userId;
     }
 
-    // Getters & Setters
+    public Record() {}
+
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
+
+    public String getDiagnosis() { return diagnosis; }
+    public void setDiagnosis(String diagnosis) { this.diagnosis = diagnosis; }
+
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
+
     public int getUserId() { return userId; }
     public void setUserId(int userId) { this.userId = userId; }
 }

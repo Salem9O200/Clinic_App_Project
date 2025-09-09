@@ -14,12 +14,13 @@ import com.example.clinicapp.databinding.FragmentProfileBinding;
 
 public class ProfileFragment extends Fragment {
 
-    FragmentProfileBinding binding;
+    private FragmentProfileBinding binding;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
         binding = FragmentProfileBinding.inflate(inflater, container, false);
+
         SharedPrefManager pref = new SharedPrefManager(getActivity());
 
         binding.btnLogout.setOnClickListener(v -> {

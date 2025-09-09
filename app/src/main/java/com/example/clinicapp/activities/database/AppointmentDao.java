@@ -1,5 +1,6 @@
 package com.example.clinicapp.activities.database;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
@@ -12,8 +13,12 @@ import java.util.List;
 public interface AppointmentDao {
 
     @Insert
-    void insert(Appointment appointment);
+    long insert(Appointment appointment);
 
     @Query("SELECT * FROM appointments WHERE userId = :userId")
     List<Appointment> getAppointmentsByUserId(int userId);
+
+    @Query("SELECT * FROM appointments WHERE userId = :userId")
+    LiveData<List<Appointment>> getAppointmentsByUserIdLive(int userId);
+
 }

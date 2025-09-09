@@ -4,6 +4,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -31,7 +32,7 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.RecordView
     @Override
     public void onBindViewHolder(@NonNull RecordViewHolder holder, int position) {
         Record record = records.get(position);
-        holder.tvTitle.setText(record.getTitle());
+        holder.tvDiagnosis.setText(record.getDiagnosis());
         holder.tvDescription.setText(record.getDescription());
     }
 
@@ -40,12 +41,15 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.RecordView
         return records.size();
     }
 
-    static class RecordViewHolder extends RecyclerView.ViewHolder {
-        TextView tvTitle, tvDescription;
+    public void setRecords(List<Record> records) {
+    }
+
+    public static class RecordViewHolder extends RecyclerView.ViewHolder {
+        TextView tvDiagnosis, tvDescription;
 
         public RecordViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvTitle = itemView.findViewById(R.id.tvTitle);
+            tvDiagnosis = itemView.findViewById(R.id.tvDiagnosis);
             tvDescription = itemView.findViewById(R.id.tvDescription);
         }
     }

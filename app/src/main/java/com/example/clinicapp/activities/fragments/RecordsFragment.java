@@ -20,37 +20,36 @@ import java.util.List;
 
 public class RecordsFragment extends Fragment {
 
-    FragmentRecordsBinding binding;
-    private List<Record> records;
+    private FragmentRecordsBinding binding;
     private RecordAdapter adapter;
-    private AppDatabase db;
-    private int userId;
+    private List<Record> records;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
         binding = FragmentRecordsBinding.inflate(inflater, container, false);
 
-        db = AppDatabase.getInstance(getActivity());
         SharedPrefManager pref = new SharedPrefManager(getActivity());
-        userId = pref.getUserId();
+        int userId = pref.getUserId();
 
+        AppDatabase db = AppDatabase.getInstance(getActivity());
         records = db.recordDao().getRecordsByUserId(userId);
 
         adapter = new RecordAdapter(records);
-        binding.recordsRV.setLayoutManager(new LinearLayoutManager(getActivity()));
-        binding.recordsRV.setAdapter(adapter);
+        binding.rvUpcomingRecord.setLayoutManager(new LinearLayoutManager(getActivity()));
+        binding.rvUpcomingRecord.setAdapter(adapter);
 
-        binding.fabAddRecord.setOnClickListener(v -> showAddRecordDialog());
+        binding.fabAddRecord.setOnClickListener(v -> showAddRecordDialog(userId));
 
         return binding.getRoot();
     }
 
-    private void showAddRecordDialog() {
+    private void showAddRecordDialog(int userId) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("New Record");
 
-        View dialogView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_add_record, null);
+        View dialogView = LayoutInflater.from(getActivity())
+                .inflate(R.layout.dialog_add_record, null);
         EditText etDiagnosis = dialogView.findViewById(R.id.etDiagnosis);
         EditText etDescription = dialogView.findViewById(R.id.etDescription);
 
@@ -61,10 +60,12 @@ public class RecordsFragment extends Fragment {
 
             if (!diagnosis.isEmpty() && !description.isEmpty()) {
                 Record newRecord = new Record(diagnosis, description, userId);
-                db.recordDao().insertRecord(newRecord);
+                AppDatabase.getInstance(getActivity()).recordDao().insertRecord(newRecord);
 
+                // تحديث القائمة
                 records.clear();
-                records.addAll(db.recordDao().getRecordsByUserId(userId));
+                records.addAll(AppDatabase.getInstance(getActivity())
+                        .recordDao().getRecordsByUserId(userId));
                 adapter.notifyDataSetChanged();
             }
         });
